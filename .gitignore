@@ -1,0 +1,43 @@
+# --- Binários e Executáveis ---
+# Ignora binários compilados (comuns em builds locais)
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+bin/
+dist/
+
+# Se você costuma dar o nome da pasta ao binário, ignore-o especificamente:
+# nomedoapp
+
+# --- Ferramentas de Teste e Cobertura ---
+*.test
+*.out
+coverage.txt
+
+# --- Dependências ---
+# Geralmente não ignoramos o vendor/ se o projeto usa Go Modules, 
+# mas alguns workflows preferem mantê-lo fora do Git.
+# vendor/
+
+# --- IDEs e Editores ---
+# Visual Studio Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# JetBrains (GoLand)
+.idea/
+
+# Vim/Emacs
+*~
+*.swp
+*.swo
+
+# --- Outros ---
+.DS_Store
+.env
