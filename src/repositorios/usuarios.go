@@ -1,7 +1,7 @@
 package repositorios
 
 import (
-	"api/src/models"
+	"api/src/modelos"
 	"database/sql"
 )
 
@@ -14,25 +14,25 @@ func NovoRepositorioDeUsuarios(db *sql.DB) *usuarios  {
 }
 
 func (repositorio usuarios) Criar(usuario models.Usuario) (uint64, error)  {
-	statement, erro := repositorio.db.Prepare("insert into usuarios (nome, nick, email, senha) values(?,?,?,?)")
+	query := "insert into usuarios (nome, nick, email, senha) values($1,$2,$3,$4) returning id"
+	var ultimoIdInserido uint64
+	// if erro != nil {
+	// 	return 0, erro
+	// }
+
+	// defer repositorio.Close()
+
+	erro := repositorio.db.QueryRow(query,usuario.Nome, usuario.Nick, usuario.Email, usuario.Senha).Scan(&ultimoIdInserido)
 
 	if erro != nil {
 		return 0, erro
 	}
 
-	defer statement.Close()
+	// ultimoIdInserido, erro := resultado.LastInsertId()
 
-	resultado, erro := statement.Exec(usuario.Nome, usuario.Nick, usuario.Email, usuario.Senha)
+	// 	if erro != nil {
+	// 	return 0, erro
+	// }
 
-	if erro != nil {
-		return 0, erro
-	}
-
-	ultimoIdInserido, erro := resultado.LastInsertId()
-
-		if erro != nil {
-		return 0, erro
-	}
-
-	return uint64(ultimoIdInserido), nil
+	return ultimoIdInserido, nil
 }
