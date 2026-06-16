@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"strings"
 )
 
 //CriarUsuario cria um novo usuário no banco de dados
@@ -24,6 +25,11 @@ func CriarUsuario(w http.ResponseWriter, r *http.Request)  {
 	if erro = json.Unmarshal(corpoRequest, &usuario); erro != nil {
 		respostas.Erro(w, http.StatusBadRequest, erro)
 		return
+	}
+
+	if erro = usuario.Preparar(); erro != nil{
+		respostas.Erro(w, http.StatusBadRequest, erro)
+		return		
 	}
 
 	db, erro := banco.Conectar()
@@ -50,11 +56,29 @@ func CriarUsuario(w http.ResponseWriter, r *http.Request)  {
 
 //BuscarUsuarios encontra todos os usuários no banco de dados
 func BuscarUsuarios(w http.ResponseWriter, r *http.Request)  {
-	w.Write([]byte("Buscando todos os Usuários!"))
+	nomeOuNick := strings.ToLower(r.URL.Query().Get("usuario"))
+
+	db, erro := banco.Conectar()
+
+	if erro != nil {
+		respostas.Erro(w, http.StatusInternalServerError, erro)
+		return 
+	}
+	defer db.Close()
+
+	repositorio := repositorios.NovoRepositorioDeUsuarios(db)
+	usuarios, erro := repositorio.Buscar(nomeOuNick)
+
+	if erro != nil {
+		respostas.Erro(w, http.StatusInternalServerError, erro)
+		return 
+	}
+
+	respostas.JSON(w, http.StatusOK, usuarios)
 }
 //BuscarUsuario encontra um usuário no banco de dados
 func BuscarUsuario(w http.ResponseWriter, r *http.Request)  {
-	w.Write([]byte("Buscndo um  Usuário!"))
+	w.Write([]byte("Buscando um  Usuário!"))
 }
 //AtualizarUsuario atualizar um usuário no banco de dados
 func AtualizarUsuario(w http.ResponseWriter, r *http.Request)  {
