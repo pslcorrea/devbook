@@ -104,3 +104,16 @@ func (repositorio usuarios) Atualizar(ID uint64, usuario models.Usuario) error{
 
 	return nil
 }
+
+func (repositorio usuarios) Deletar(ID uint64) error{
+	_, erro := repositorio.db.Exec(
+		"DELETE FROM usuarios WHERE id = $1",
+		ID,
+	)
+
+	if erro != nil {
+		return erro
+	}
+
+	return nil
+}
