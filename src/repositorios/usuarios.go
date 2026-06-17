@@ -27,10 +27,10 @@ func (repositorio usuarios) Criar(usuario models.Usuario) (uint64, error)  {
 }
 
 func (repositorio usuarios) Buscar(nomeOuNick string) ([]models.Usuario, error)  {
-	nomeOuNick = fmt.Sprintf("%%s%%, nomeOuNick")
+	nomeOuNick = fmt.Sprintf("%%%s%%", nomeOuNick)
 
 	linhas, erro := repositorio.db.Query(
-		"SELECT id, nome, nick, email, criadoEm FROM usuarios WHERE nome LIKE $1 or nick LIKE $2",
+		"SELECT id, nome, nick, email, criadoEm FROM usuarios WHERE nome ILIKE $1 or nick ILIKE $2",
 		nomeOuNick, nomeOuNick,
 	)
 
@@ -58,4 +58,49 @@ func (repositorio usuarios) Buscar(nomeOuNick string) ([]models.Usuario, error) 
 	}
 	
 	return usuarios, nil
+}
+
+func (repositorio usuarios) BuscarPorID(ID uint64) (models.Usuario, error)  {
+	linhas, erro := repositorio.db.Query(
+		"SELECT id, nome, nick, email, criadoEm FROM usuarios WHERE id = $1",
+		ID,
+	)
+
+	if erro != nil {
+		return models.Usuario{}, erro
+	}
+
+	defer linhas.Close()
+
+	var usuario models.Usuario
+
+	if linhas.Next() {
+		if erro = linhas.Scan(
+			&usuario.ID,
+			&usuario.Nome,
+			&usuario.Nick,
+			&usuario.Email,
+			&usuario.CriadoEm,			
+		); erro != nil {
+			return  models.Usuario{}, erro
+		}
+	}
+
+	return usuario, nil
+}
+
+func (repositorio usuarios) Atualizar(ID uint64, usuario models.Usuario) error{
+	_, erro := repositorio.db.Exec(
+		"UPDATE usuarios SET nome = $1, nick = $2, email = $3 WHERE id = $4",
+		usuario.Nome,
+		usuario.Nick,
+		usuario.Email,
+		ID,
+	)
+
+	if erro != nil {
+		return erro
+	}
+
+	return nil
 }
