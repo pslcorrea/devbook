@@ -162,13 +162,13 @@ func DeletarUsuario(w http.ResponseWriter, r *http.Request)  {
 		return 
 	}
 
-	db, erro := banco.Conectar()
+		db, erro := banco.Conectar()
 
-	if erro != nil {
-		respostas.Erro(w, http.StatusInternalServerError, erro)
-		return 
-	}
-	defer db.Close()
+		if erro != nil {
+			respostas.Erro(w, http.StatusInternalServerError, erro)
+			return 
+		}
+		defer db.Close()
 
 	repositorio := repositorios.NovoRepositorioDeUsuarios(db)
 	if erro = repositorio.Deletar(usuarioID); erro != nil {
