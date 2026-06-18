@@ -13,6 +13,8 @@ var (
 	//StringConexao é a string de conexão com Postgres
 	StringConexao = ""
 	Porta         = 0
+	// Chave para assinar o token
+	Scretkey []byte
 )
 
 // Carregar vai iniciar as váriaveis de ambiente
@@ -42,5 +44,7 @@ func Carregar() {
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
 		dbHost, dbUsuario, dbSenha, dbNome, dbPorta,
 	)
+
+	Scretkey = []byte(os.Getenv("SECRET_KEY"))
 
 }
