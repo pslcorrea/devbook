@@ -128,3 +128,25 @@ func (repositorio usuarios) BuscarPorEmail(email string) (models.Usuario, error)
 
 	return usuario, nil
 }
+
+func (repositorio usuarios) Seguir(usuarioID, seguidorID uint64)  error {
+	query := "insert into seguidores (usuario_id, seguidor_id) values($1, $2) ON CONFLICT (usuario_id, seguidor_id) DO NOTHING"
+
+	_, erro := repositorio.db.Exec(query, usuarioID, seguidorID )
+	if erro != nil {
+		return erro
+	}
+
+	return  nil
+}
+
+func (repositorio usuarios) PararDeSeguir(usuarioID, seguidorID uint64)  error {
+	query := "delete from seguidores where usuario_id = $1 and seguidor_id = $2"
+
+	if _, erro := repositorio.db.Exec(query, usuarioID, seguidorID ); erro != nil {
+		return erro
+	}
+
+	return  nil
+}
+
